@@ -20,7 +20,7 @@ shipment = FedexProcessShipmentRequest(CONFIG_OBJ, customer_transaction_id=custo
 
 # This is very generalized, top-level information.
 # REGULAR_PICKUP, REQUEST_COURIER, DROP_BOX, BUSINESS_SERVICE_CENTER or STATION
-shipment.RequestedShipment.DropoffType = 'BUSINESS_SERVICE_CENTER'
+shipment.RequestedShipment.DropoffType = 'REGULAR_PICKUP'
 
 # Type of shipping, you can choose from:
 # STANDARD_OVERNIGHT, PRIORITY_OVERNIGHT, FEDEX_GROUND, FEDEX_EXPRESS_SAVER,
@@ -29,31 +29,47 @@ shipment.RequestedShipment.ServiceType = 'FEDEX_2_DAY'
 
 # What kind of package this will be shipped in.
 # FEDEX_BOX, FEDEX_PAK, FEDEX_TUBE, YOUR_PACKAGING, FEDEX_ENVELOPE
-shipment.RequestedShipment.PackagingType = 'FEDEX_PAK'
+shipment.RequestedShipment.PackagingType = 'YOUR_PACKAGING'
 
 # Shipper contact info.
-shipment.RequestedShipment.Shipper.Contact.PersonName = 'Sender Name'
-shipment.RequestedShipment.Shipper.Contact.CompanyName = 'Some Company'
-shipment.RequestedShipment.Shipper.Contact.PhoneNumber = '9012638716'
+shipment.RequestedShipment.Shipper.Contact.PersonName = 'IT Department'
+shipment.RequestedShipment.Shipper.Contact.CompanyName = 'Red Canary'
+shipment.RequestedShipment.Shipper.Contact.PhoneNumber = '8559770686'
 
 # Shipper address.
-shipment.RequestedShipment.Shipper.Address.StreetLines = ['Address Line 1']
-shipment.RequestedShipment.Shipper.Address.City = 'Herndon'
-shipment.RequestedShipment.Shipper.Address.StateOrProvinceCode = 'VA'
-shipment.RequestedShipment.Shipper.Address.PostalCode = '20171'
+shipment.RequestedShipment.Shipper.Address.StreetLines = ['1601 19th St Suite 900']
+shipment.RequestedShipment.Shipper.Address.City = 'Denver'
+shipment.RequestedShipment.Shipper.Address.StateOrProvinceCode = 'CO'
+shipment.RequestedShipment.Shipper.Address.PostalCode = '80202'
 shipment.RequestedShipment.Shipper.Address.CountryCode = 'US'
 shipment.RequestedShipment.Shipper.Address.Residential = True
 
 # Recipient contact info.
-shipment.RequestedShipment.Recipient.Contact.PersonName = 'Recipient Name'
-shipment.RequestedShipment.Recipient.Contact.CompanyName = 'Recipient Company'
-shipment.RequestedShipment.Recipient.Contact.PhoneNumber = '9012637906'
+print("")
+print("Hello! Please enter the first and last name of the person you are shipping to.")
+print("Type your answer and hit 'Enter'.")
+shipment.RequestedShipment.Recipient.Contact.PersonName = input()
+
+print("")
+print("Phone number:")
+shipment.RequestedShipment.Recipient.Contact.PhoneNumber = input()
 
 # Recipient address
-shipment.RequestedShipment.Recipient.Address.StreetLines = ['Address Line 1']
-shipment.RequestedShipment.Recipient.Address.City = 'Herndon'
-shipment.RequestedShipment.Recipient.Address.StateOrProvinceCode = 'VA'
-shipment.RequestedShipment.Recipient.Address.PostalCode = '20171'
+print("")
+print("Street Address:")
+shipment.RequestedShipment.Recipient.Address.StreetLines = input()
+
+print("")
+print("City:")
+shipment.RequestedShipment.Recipient.Address.City = input()
+
+print("")
+print("Sate Code:")
+shipment.RequestedShipment.Recipient.Address.StateOrProvinceCode = input()
+
+print("")
+print("Zip Code:")
+shipment.RequestedShipment.Recipient.Address.PostalCode = input()
 shipment.RequestedShipment.Recipient.Address.CountryCode = 'US'
 # This is needed to ensure an accurate rate quote with the response. Use AddressValidation to get ResidentialStatus
 shipment.RequestedShipment.Recipient.Address.Residential = True
@@ -92,15 +108,54 @@ shipment.RequestedShipment.LabelSpecification.LabelPrintingOrientation = 'TOP_ED
 if hasattr(shipment.RequestedShipment.LabelSpecification, 'LabelOrder'):
     del shipment.RequestedShipment.LabelSpecification.LabelOrder  # Delete, not using.
 
-# Create Weight, in pounds.
+# Create Weight, in pounds, according to what item you're sending. If not a laptop or a monitor,
+# you can select 'Other' to input the values yourself.
 package1_weight = shipment.create_wsdl_object_of_type('Weight')
-package1_weight.Value = 1.0
-package1_weight.Units = "LB"
-
-# Insured Value
 package1_insure = shipment.create_wsdl_object_of_type('Money')
-package1_insure.Currency = 'USD'
-package1_insure.Amount = 1.0
+
+print("")
+print("Are you shipping a laptop, monitor, or other?")
+print("Type your answer and hit 'Enter'.")
+answer = input()
+
+if answer == "Laptop" or answer == "laptop":
+    print("")
+    print("Are you shipping a monitor with this as well? Y/N")
+    answer = input()
+    if answer == "Y" or answer == "y":
+        print("generate a monitor shipping label as well")
+    package1_weight.Value = 10.0
+    package1_weight.Units = "LB"
+
+    # Insured Value of Laptop
+    package1_insure.Currency = 'USD'
+    package1_insure.Amount = 2000.0
+
+elif answer == "Monitor" or answer == "monitor":
+    package1_weight.Value = 15.0
+    package1_weight.Units = "LB"
+
+    # Insured Value of Monitor
+    package1_insure.Currency = 'USD'
+    package1_insure.Amount = 500.0
+
+elif answer == "Other" or answer == "other":
+    print("")
+    print("Weight of package (LBs):")
+    weight = input()
+    package1_weight.Value = weight
+    package1_weight.Units = "LB"
+
+    print("")
+    print("Insured value of the package contents:")
+    package1_insure.Currency = 'USD'
+
+    #Why can't I get this value below to be an input?
+    package1_insure.Amount = 200.0
+
+else: 
+    print("")
+    print("I didn't quite catch that. Try again?")
 
 # Create PackageLineItem
 package1 = shipment.create_wsdl_object_of_type('RequestedPackageLineItem')
@@ -148,25 +203,3 @@ print("Writing to file {}".format(out_path))
 out_file = open(out_path, 'wb')
 out_file.write(label_binary_data)
 out_file.close()
-
-"""
-This is an example of how to print the label to a serial printer. This will not
-work for all label printers, consult your printer's documentation for more
-details on what formats it can accept.
-"""
-# Pipe the binary directly to the label printer. Works under Linux
-# without requiring PySerial. This WILL NOT work on other platforms.
-# label_printer = open("/dev/ttyS0", "w")
-# label_printer.write(label_binary_data)
-# label_printer.close()
-
-"""
-This is a potential cross-platform solution using pySerial. This has not been
-tested in a long time and may or may not work. For Windows, Mac, and other
-platforms, you may want to go this route.
-"""
-# import serial
-# label_printer = serial.Serial(0)
-# print("SELECTED SERIAL PORT: "+ label_printer.portstr)
-# label_printer.write(label_binary_data)
-# label_printer.close()
