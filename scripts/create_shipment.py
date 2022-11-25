@@ -3,9 +3,35 @@ import logging
 import binascii
 import datetime
 import sys
+import os
 
 from config import CONFIG_OBJ
 from fedex_wrapper.services.ship_service import FedexProcessShipmentRequest
+
+print("")
+print("Hello! Please enter the first and last name of the person you are shipping to.")
+print("Type your answer and hit 'Enter'.")
+recipient_name = input()
+
+print("")
+print("Phone number:")
+recipient_phone_number = input()
+
+print("")
+print("Street Address:")
+recipient_address = input()
+
+print("")
+print("City:")
+recipient_city = input()
+
+print("")
+print("Sate Code:")
+recipient_state = input()
+
+print("")
+print("Zip Code:")
+recipient_zipcode = input()
 
 # Generates the shipping label as a PDF.
 GENERATE_IMAGE_TYPE = 'PDF'
@@ -45,31 +71,15 @@ shipment.RequestedShipment.Shipper.Address.CountryCode = 'US'
 shipment.RequestedShipment.Shipper.Address.Residential = True
 
 # Recipient contact info.
-print("")
-print("Hello! Please enter the first and last name of the person you are shipping to.")
-print("Type your answer and hit 'Enter'.")
-shipment.RequestedShipment.Recipient.Contact.PersonName = input()
-
-print("")
-print("Phone number:")
-shipment.RequestedShipment.Recipient.Contact.PhoneNumber = input()
+shipment.RequestedShipment.Recipient.Contact.PersonName = recipient_name
+shipment.RequestedShipment.Recipient.Contact.PhoneNumber = recipient_phone_number
 
 # Recipient address
-print("")
-print("Street Address:")
-shipment.RequestedShipment.Recipient.Address.StreetLines = input()
+shipment.RequestedShipment.Recipient.Address.StreetLines = recipient_address
+shipment.RequestedShipment.Recipient.Address.City = recipient_city
+shipment.RequestedShipment.Recipient.Address.StateOrProvinceCode = recipient_state
 
-print("")
-print("City:")
-shipment.RequestedShipment.Recipient.Address.City = input()
-
-print("")
-print("Sate Code:")
-shipment.RequestedShipment.Recipient.Address.StateOrProvinceCode = input()
-
-print("")
-print("Zip Code:")
-shipment.RequestedShipment.Recipient.Address.PostalCode = input()
+shipment.RequestedShipment.Recipient.Address.PostalCode = recipient_zipcode
 shipment.RequestedShipment.Recipient.Address.CountryCode = 'US'
 # This is needed to ensure an accurate rate quote with the response. Use AddressValidation to get ResidentialStatus
 shipment.RequestedShipment.Recipient.Address.Residential = True
@@ -117,6 +127,7 @@ print("")
 print("Are you shipping a laptop, monitor, or other?")
 print("Type your answer and hit 'Enter'.")
 answer = input()
+equipment_type = answer
 
 if answer == "Laptop" or answer == "laptop":
     print("")
@@ -142,15 +153,13 @@ elif answer == "Monitor" or answer == "monitor":
 elif answer == "Other" or answer == "other":
     print("")
     print("Weight of package (LBs):")
-    weight = input()
+    weight = 10.0
     package1_weight.Value = weight
     package1_weight.Units = "LB"
 
     print("")
     print("Insured value of the package contents:")
     package1_insure.Currency = 'USD'
-
-    #Why can't I get this value below to be an input?
     package1_insure.Amount = 200.0
 
 else: 
@@ -160,7 +169,7 @@ else:
 # Create PackageLineItem
 package1 = shipment.create_wsdl_object_of_type('RequestedPackageLineItem')
 # BAG, BARREL, BASKET, BOX, BUCKET, BUNDLE, CARTON, CASE, CONTAINER, ENVELOPE etc..
-package1.PhysicalPackaging = 'ENVELOPE'
+package1.PhysicalPackaging = 'BOX'
 package1.Weight = package1_weight
 
 # Add Insured and Total Insured values.
@@ -198,8 +207,11 @@ label_binary_data = binascii.a2b_base64(ascii_label_data)
 This is an example of how to dump a label to a local file.
 """
 # This will be the file we write the label out to.
-out_path = 'example_shipment_label.%s' % GENERATE_IMAGE_TYPE.lower()
+recipient_name = recipient_name.replace(' ', '_')
+recipient_name = recipient_name.replace("'", "")
+out_path = (f'{recipient_name}_{equipment_type}.%s') % GENERATE_IMAGE_TYPE.lower()
 print("Writing to file {}".format(out_path))
 out_file = open(out_path, 'wb')
 out_file.write(label_binary_data)
 out_file.close()
+os.system(f"open {out_path}")
