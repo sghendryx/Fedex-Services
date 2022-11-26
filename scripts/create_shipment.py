@@ -153,14 +153,17 @@ elif answer == "Monitor" or answer == "monitor":
 elif answer == "Other" or answer == "other":
     print("")
     print("Weight of package (LBs):")
-    weight = 10.0
+    weight = input()
+    weight = float(weight)
     package1_weight.Value = weight
     package1_weight.Units = "LB"
 
     print("")
     print("Insured value of the package contents:")
     package1_insure.Currency = 'USD'
-    package1_insure.Amount = 200.0
+    amount = input()
+    amount = float(amount)
+    package1_insure.Amount = amount
 
 else: 
     print("")
