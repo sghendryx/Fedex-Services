@@ -100,7 +100,9 @@ def create_shipment(recipient_name, recipient_phone_number, recipient_address, r
 
     return shipment
 def monitor_shipping_label(recipient_name, recipient_phone_number, recipient_address, recipient_city, recipient_state, recipient_zipcode):
-
+    
+    GENERATE_IMAGE_TYPE = 'PDF'
+    
     shipment = create_shipment(recipient_name, recipient_phone_number, recipient_address, recipient_city, recipient_state, recipient_zipcode)
 
     package1_weight = shipment.create_wsdl_object_of_type('Weight')
