@@ -12,9 +12,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from fedex_wrapper.config import FedexConfig
 
 # Change these values to match your testing account/meter number.
-CONFIG_OBJ = FedexConfig(key='fdsfsdfsdfsdfsdfsdfsdfsd',
-                         password='blahblahblah',
-                         account_number='blahblahblah',
-                         meter_number='blahblahblah',
-                         freight_account_number='blahblahblah',
+CONFIG_OBJ = FedexConfig(key='xxxxxxxxxxxx',
+                         password='xxxxxxxxxxxx',
+                         account_number='xxxxxxxxxxxx',
+                         meter_number='xxxxxxxxxxxx',
+                         freight_account_number='xxxxxxxxxxxx',
                          use_test_server=True)
