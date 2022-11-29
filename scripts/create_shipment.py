@@ -241,7 +241,7 @@ def return_shipping_label(recipient_name, recipient_phone_number, recipient_addr
     out_file.write(label_binary_data)
     out_file.close()
 
-    dst_path = r"/Users/solveighendryx/downloads"
+    dst_path = os.path.expanduser('~') + (r"/downloads")
     shutil.move(out_path, dst_path)
 def monitor_shipping_label(recipient_name, recipient_phone_number, recipient_address, recipient_city, recipient_state, recipient_zipcode):
     
@@ -295,7 +295,7 @@ def monitor_shipping_label(recipient_name, recipient_phone_number, recipient_add
     out_file.write(label_binary_data)
     out_file.close()
 
-    dst_path = r"/Users/solveighendryx/downloads"
+    dst_path = os.path.expanduser('~') + (r"/downloads")
     shutil.move(out_path, dst_path)
 def run():
     print("")
@@ -432,7 +432,7 @@ def run():
     # os.system(f"open {out_path}")
 
     # Moves generated PDF to downloads.
-    dst_path = r"/Users/solveighendryx/downloads"
+    dst_path = os.path.expanduser('~') + (r"/downloads")
     shutil.move(out_path, dst_path)
 
     print("")
