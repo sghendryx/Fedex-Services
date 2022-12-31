@@ -317,7 +317,7 @@ def run():
     recipient_city = input()
 
     print("")
-    print("Sate Code:")
+    print("State Code:")
     recipient_state = input()
 
     print("")
